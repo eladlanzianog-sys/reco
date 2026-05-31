@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>פושAI - מאמן אישי</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #141414;
+    --bg3: #1c1c1c;
+    --card: #181818;
+    --card2: #202020;
+    --border: #2a2a2a;
+    --orange: #ff4d1c;
+    --orange2: #ff6b3d;
+    --red: #e63000;
+    --text: #f0f0f0;
+    --text2: #999;
+    --text3: #666;
+    --green: #2ecc71;
+    --blue: #3498db;
+    --purple: #9b59b6;
+    --yellow: #f1c40f;
+    --grad: linear-gradient(135deg, #ff4d1c, #ff6b3d);
+    --grad2: linear-gradient(135deg, #1c1c1c, #222);
+    --shadow: 0 8px 32px rgba(255,77,28,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-x: hidden;
+  }
+
+  #app {
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 80px;
+  }
+
+  /* ── TOP HEADER ── */
+  .top-header {
+    background: var(--bg2);
+    padding: 50px 20px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .top-header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .top-header h1 span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .header-right { display:flex; gap:10px; align-items:center; }
+  .header-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--grad); display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:14px; color:#fff;
+  }
+
+  /* ── SECTIONS ── */
+  .section { display:none; animation: fadeUp 0.3s ease; }
+  .section.active { display:block; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left:50%;
+    transform: translateX(-50%);
+    width: 100%; max-width:430px;
+    background: rgba(14,14,14,0.97);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 0 20px;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+  }
+  .nav-item {
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    cursor:pointer; padding:6px 0;
+    transition: all 0.2s;
+  }
+  .nav-icon { font-size:22px; line-height:1; filter: grayscale(1) opacity(0.4); transition:all 0.2s; }
+  .nav-label { font-size:10px; font-weight:600; color:var(--text3); transition:all 0.2s; letter-spacing:0.5px; }
+  .nav-item.active .nav-icon { filter: none; }
+  .nav-item.active .nav-label { color:var(--orange); }
+  .nav-item:active { transform:scale(0.92); }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card); border-radius:18px; padding:18px;
+    border:1px solid var(--border); margin-bottom:14px;
+  }
+  .card-title { font-size:13px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+
+  /* ── SCROLL CONTAINER ── */
+  .scroll-content { padding:16px; }
+
+  /* ═══════════════════════════
+     PROFILE SECTION
+  ═══════════════════════════ */
+  .profile-hero {
+    background: var(--bg2);
+    padding: 24px 20px;
+    display:flex; align-items:center; gap:16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .profile-avatar-big {
+    width:72px; height:72px; border-radius:50%;
+    background: var(--grad); display:flex; align-items:center; justify-content:center;
+    font-size:28px; font-weight:900; color:#fff; flex-shrink:0;
+    box-shadow: 0 4px 20px rgba(255,77,28,0.4);
+  }
+  .profile-hero-info h2 { font-size:22px; font-weight:800; }
+  .profile-hero-info p { color:var(--text2); font-size:13px; margin-top:4px; }
+  .profile-goal-badge {
+    display:inline-block; margin-top:8px; padding:4px 12px;
+    border-radius:20px; font-size:11px; font-weight:700;
+    background: rgba(255,77,28,0.15); color:var(--orange);
+    border:1px solid rgba(255,77,28,0.3);
+  }
+
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .stat-box {
+    background: var(--card2); border-radius:14px; padding:14px 10px;
+    text-align:center; border:1px solid var(--border);
+  }
+  .stat-box .val { font-size:22px; font-weight:800; color:var(--orange); }
+  .stat-box .lbl { font-size:10px; color:var(--text2); font-weight:600; margin-top:2px; }
+
+  .form-group { margin-bottom:14px; }
+  .form-label { font-size:12px; font-weight:700; color:var(--text2); margin-bottom:6px; display:block; letter-spacing:0.5px; }
+  .form-input {
+    width:100%; background:var(--card2); border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px; color:var(--text);
+    font-family:'Heebo',sans-serif; font-size:14px; outline:none;
+    transition:border-color 0.2s;
+  }
+  .form-input:focus { border-color:var(--orange); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  .goal-selector { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .goal-btn {
+    padding:12px 8px; border-radius:12px; border:2px solid var(--border);
+    background:var(--card2); color:var(--text2); font-family:'Heebo',sans-serif;
+    font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; text-align:center;
+  }
+  .goal-btn.active { border-color:var(--orange); background:rgba(255,77,28,0.1); color:var(--orange); }
+
+  .save-btn {
+    width:100%; padding:16px; border-radius:14px; border:none;
+    background: var(--grad); color:#fff; font-family:'Heebo',sans-serif;
+    font-size:16px; font-weight:800; cursor:pointer; margin-top:8px;
+    box-shadow: var(--shadow); transition: transform 0.15s, opacity 0.15s;
+  }
+  .save-btn:active { transform:scale(0.97); opacity:0.9; }
+
+  .bmi-bar-wrap { margin-top:10px; }
+  .bmi-bar { height:8px; border-radius:4px; background:linear-gradient(90deg,#3498db,#2ecc71,#f1c40f,#e74c3c); position:relative; }
+  .bmi-marker {
+    position:absolute; top:-4px; width:16px; height:16px; border-radius:50%;
+    background:#fff; border:3px solid var(--orange); transform:translateX(-50%);
+    transition: left 0.5s ease;
+  }
+  .bmi-labels { display:flex; justify-content:space-between; margin-top:6px; font-size:10px; color:var(--text3); }
+
+  /* ═══════════════════════════
+     NUTRITION SECTION
+  ═══════════════════════════ */
+  .progress-rings { display:flex; justify-content:center; gap:30px; padding:10px 0 20px; }
+  .ring-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .ring-svg { transform:rotate(-90deg); }
+  .ring-bg { fill:none; stroke:var(--border); stroke-width:8; }
+  .ring-fill { fill:none; stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 0.6s ease; }
+  .ring-label { font-size:12px; font-weight:700; color:var(--text2); text-align:center; }
+  .ring-val { font-size:11px; color:var(--text3); text-align:center; }
+  .ring-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+  .ring-container { position:relative; display:inline-block; }
+  .ring-center-val { font-size:18px; font-weight:800; color:var(--text); }
+  .ring-center-sub { font-size:10px; color:var(--text2); }
+
+  /* macro bar */
+  .macro-bar-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:4px; }
+  .macro-pill {
+    border-radius:12px; padding:10px 8px; text-align:center;
+    border:1px solid var(--border);
+  }
+  .macro-pill .mp-val { font-size:16px; font-weight:800; }
+  .macro-pill .mp-lbl { font-size:10px; color:var(--text2); margin-top:2px; font-weight:600; }
+  .macro-pill .mp-prog { height:3px; border-radius:2px; background:var(--border); margin-top:6px; overflow:hidden; }
+  .macro-pill .mp-fill { height:100%; border-radius:2px; transition:width 0.5s ease; }
+
+  /* meal tabs */
+  .meal-tabs { display:flex; gap:6px; margin-bottom:14px; overflow-x:auto; padding-bottom:2px; }
+  .meal-tabs::-webkit-scrollbar { display:none; }
+  .meal-tab {
+    flex-shrink:0; padding:8px 14px; border-radius:20px; border:1px solid var(--border);
+    background:var(--card2); color:var(--text2); font-family:'Heebo',sans-serif;
+    font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s;
+    display:flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+  .meal-tab.active { background:rgba(255,77,28,0.15); border-color:var(--orange); color:var(--orange); }
+  .meal-tab-cal { font-size:10px; font-weight:600; padding:2px 6px; border-radius:10px; background:rgba(255,255,255,0.08); }
+
+  /* logged food items */
+  .meal-log-section { margin-bottom:14px; }
+  .meal-log-header {
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;
+  }
+  .meal-log-title { font-size:16px; font-weight:800; display:flex; align-items:center; gap:8px; }
+  .meal-log-summary { font-size:12px; color:var(--text2); }
+
+  .food-item {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 14px; background:var(--card2); border-radius:14px;
+    margin-bottom:8px; border:1px solid var(--border); animation:fadeUp 0.2s ease;
+  }
+  .food-item-left { display:flex; align-items:center; gap:10px; }
+  .food-item-emoji { font-size:22px; width:36px; text-align:center; flex-shrink:0; }
+  .food-item-name { font-size:14px; font-weight:700; }
+  .food-item-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+  .food-item-right { display:flex; align-items:center; gap:10px; text-align:left; }
+  .food-item-cals { font-size:16px; font-weight:800; color:var(--orange); }
+  .food-item-prot { font-size:10px; color:var(--blue); font-weight:700; }
+  .food-item-protein { font-size:11px; color:var(--text2); text-align:left; }
+  .delete-food { background:none; border:none; color:var(--text3); cursor:pointer; font-size:16px; padding:4px; }
+
+  .empty-meal {
+    text-align:center; padding:20px; color:var(--text3); font-size:13px;
+    border:1px dashed var(--border); border-radius:12px; margin-bottom:10px;
+  }
+
+  /* food database */
+  .food-db-search {
+    width:100%; background:var(--card2); border:1px solid var(--border); border-radius:14px;
+    padding:12px 16px; color:var(--text); font-family:'Heebo',sans-serif; font-size:14px;
+    outline:none; margin-bottom:14px; transition:border-color 0.2s;
+  }
+  .food-db-search:focus { border-color:var(--orange); }
+  .food-db-search::placeholder { color:var(--text3); }
+
+  .food-db-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+  .food-db-card {
+    background:var(--card2); border:1px solid var(--border); border-radius:16px;
+    padding:14px 12px; cursor:pointer; transition:all 0.18s; position:relative;
+    overflow:hidden;
+  }
+  .food-db-card:active { transform:scale(0.96); }
+  .food-db-card::after {
+    content:''; position:absolute; inset:0; border-radius:16px;
+    background:var(--grad); opacity:0; transition:opacity 0.15s;
+  }
+  .food-db-card.adding::after { opacity:0.08; }
+
+  .fdc-emoji { font-size:30px; margin-bottom:8px; display:block; }
+  .fdc-name { font-size:13px; font-weight:800; margin-bottom:6px; line-height:1.2; }
+  .fdc-macros { display:flex; flex-direction:column; gap:4px; }
+  .fdc-cal-row { display:flex; align-items:center; justify-content:space-between; }
+  .fdc-cal { font-size:15px; font-weight:800; color:var(--orange); }
+  .fdc-cal-lbl { font-size:9px; color:var(--text3); font-weight:600; }
+
+  /* protein bar inside card */
+  .fdc-prot-bar { height:4px; background:var(--border); border-radius:2px; margin-top:6px; overflow:hidden; }
+  .fdc-prot-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#3498db,#1abc9c); transition:width 0.4s; }
+  .fdc-prot-label { display:flex; justify-content:space-between; margin-top:4px; }
+  .fdc-prot-g { font-size:10px; color:var(--blue); font-weight:700; }
+  .fdc-prot-pct { font-size:9px; color:var(--text3); }
+
+  .fdc-add-btn {
+    position:absolute; top:10px; left:10px; width:24px; height:24px; border-radius:50%;
+    background:var(--grad); border:none; color:#fff; font-size:14px; font-weight:800;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 8px rgba(255,77,28,0.4); transition:transform 0.15s;
+  }
+  .fdc-add-btn:active { transform:scale(0.85); }
+
+  .meal-cat-label {
+    font-size:11px; font-weight:800; color:var(--text3); letter-spacing:1px;
+    text-transform:uppercase; margin:16px 0 10px; display:flex; align-items:center; gap:8px;
+  }
+  .meal-cat-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .add-food-btn {
+    width:100%; padding:12px; border-radius:12px; border:1px dashed var(--border);
+    background:transparent; color:var(--text2); font-family:'Heebo',sans-serif;
+    font-size:13px; cursor:pointer; transition:all 0.2s; text-align:center;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .add-food-btn:active { background:var(--card2); }
+
+  .macro-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; }
+  .macro-cal { background:rgba(255,77,28,0.15); color:var(--orange); }
+  .macro-pro { background:rgba(52,152,219,0.15); color:var(--blue); }
+
+  /* ═══════════════════════════
+     WORKOUT SECTION
+  ═══════════════════════════ */
+  .muscle-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px; }
+  .muscle-btn {
+    background:var(--card2); border:2px solid var(--border); border-radius:14px;
+    padding:10px 4px; text-align:center; cursor:pointer; transition:all 0.2s;
+  }
+  .muscle-btn.active { border-color:var(--orange); background:rgba(255,77,28,0.1); }
+  .muscle-btn .muscle-icon { font-size:22px; }
+  .muscle-btn .muscle-name { font-size:10px; font-weight:700; color:var(--text2); margin-top:4px; }
+  .muscle-btn.active .muscle-name { color:var(--orange); }
+
+  .exercise-item {
+    background:var(--card2); border-radius:14px; padding:14px;
+    margin-bottom:10px; border:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .exercise-name { font-size:15px; font-weight:700; }
+  .exercise-sets { font-size:12px; color:var(--text2); margin-top:3px; }
+  .exercise-badge {
+    padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700;
+    background:rgba(255,77,28,0.15); color:var(--orange);
+  }
+
+  .add-exercise-btn {
+    width:100%; padding:14px; border-radius:14px; border:2px dashed var(--orange);
+    background:rgba(255,77,28,0.05); color:var(--orange); font-family:'Heebo',sans-serif;
+    font-size:14px; font-weight:700; cursor:pointer; margin-top:4px;
+    transition: all 0.2s;
+  }
+  .add-exercise-btn:active { background:rgba(255,77,28,0.1); }
+
+  .workout-history-item {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 0; border-bottom:1px solid var(--border);
+  }
+  .workout-history-item:last-child { border-bottom:none; }
+  .workout-date { font-size:12px; color:var(--text3); }
+  .workout-summary { font-size:14px; font-weight:600; }
+  .workout-badge {
+    font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px;
+    background:rgba(46,204,113,0.15); color:var(--green);
+  }
+
+  /* ═══════════════════════════
+     AI ADVISOR SECTION
+  ═══════════════════════════ */
+  #sec-ai {
+    position: fixed;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    height: 100vh;
+    display: none;
+    flex-direction: column;
+    background: var(--bg);
+    z-index: 10;
+    padding-bottom: 80px;
+  }
+  #sec-ai.active { display: flex; }
+
+  .ai-header {
+    display:flex; align-items:center; gap:12px; padding:50px 16px 16px;
+    background:var(--bg2); border-bottom:1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .ai-avatar {
+    width:46px; height:46px; border-radius:50%; background:var(--grad);
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+    flex-shrink:0; box-shadow:0 4px 16px rgba(255,77,28,0.3);
+  }
+  .ai-header-info h3 { font-size:16px; font-weight:800; }
+  .ai-header-info p { font-size:12px; color:var(--green); display:flex; align-items:center; gap:4px; }
+  .ai-header-info p::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block; }
+
+  .messages-wrap {
+    flex:1; overflow-y:auto; padding:16px;
+    display:flex; flex-direction:column; gap:12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .msg { display:flex; gap:10px; max-width:85%; }
+  .msg.user { align-self:flex-start; flex-direction:row-reverse; }
+  .msg.bot { align-self:flex-end; }
+  .msg-bubble {
+    padding:12px 16px; border-radius:18px; font-size:14px; line-height:1.5;
+  }
+  .msg.bot .msg-bubble {
+    background:var(--card2); border:1px solid var(--border); border-bottom-right-radius:4px;
+  }
+  .msg.user .msg-bubble {
+    background:var(--grad); color:#fff; border-bottom-left-radius:4px;
+  }
+  .msg-avatar {
+    width:32px; height:32px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+  }
+  .msg.bot .msg-avatar { background:var(--grad); }
+  .msg.user .msg-avatar { background:var(--card2); border:1px solid var(--border); }
+
+  .quick-questions {
+    padding:8px 12px; display:flex; gap:6px; flex-wrap:nowrap;
+    overflow-x:auto; flex-shrink:0; border-top:1px solid var(--border);
+    background:var(--bg2);
+  }
+  .quick-questions::-webkit-scrollbar { display:none; }
+  .quick-q {
+    padding:8px 14px; background:var(--card2); border:1px solid var(--border);
+    border-radius:20px; font-family:'Heebo',sans-serif; font-size:12px; font-weight:600;
+    color:var(--text2); cursor:pointer; white-space:nowrap; transition:all 0.2s; flex-shrink:0;
+  }
+  .quick-q:active { background:rgba(255,77,28,0.1); border-color:var(--orange); color:var(--orange); }
+
+  .chat-input-bar {
+    padding:10px 14px 10px; background:var(--bg2); border-top:1px solid var(--border);
+    display:flex; gap:10px; align-items:center; flex-shrink:0;
+  }
+  .chat-input {
+    flex:1; background:var(--card2); border:1.5px solid var(--border); border-radius:24px;
+    padding:12px 16px; color:var(--text); font-family:'Heebo',sans-serif; font-size:14px;
+    outline:none; transition:border-color 0.2s; direction:rtl;
+  }
+  .chat-input:focus { border-color:var(--orange); }
+  .chat-input::placeholder { color:var(--text3); }
+  .send-btn {
+    width:44px; height:44px; border-radius:50%; background:var(--grad); border:none;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    font-size:18px; flex-shrink:0; transition:transform 0.15s;
+    box-shadow: var(--shadow);
+  }
+  .send-btn:active { transform:scale(0.9); }
+
+  /* ═══════════════════════════
+     MODALS
+  ═══════════════════════════ */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200;
+    display:none; align-items:flex-end; justify-content:center;
+    backdrop-filter:blur(4px);
+  }
+  .modal-overlay.open { display:flex; animation:overlayIn 0.2s ease; }
+  @keyframes overlayIn { from{opacity:0} to{opacity:1} }
+
+  .modal {
+    background:var(--bg2); border-radius:28px 28px 0 0;
+    width:100%; max-width:430px; padding:24px;
+    border:1px solid var(--border); border-bottom:none;
+    animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+    max-height:85vh; overflow-y:auto;
+  }
+  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+  .modal-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; }
+  .modal-title { font-size:20px; font-weight:800; margin-bottom:20px; }
+
+  /* ═══════════════════════════
+     MISC
+  ═══════════════════════════ */
+  .section-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:5px 12px; border-radius:20px;
+    background:rgba(255,77,28,0.12); color:var(--orange);
+    font-size:12px; font-weight:700; margin-bottom:14px;
+    border:1px solid rgba(255,77,28,0.2);
+  }
+
+  .today-date { font-size:13px; color:var(--text3); margin-bottom:6px; }
+
+  .water-tracker { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .water-cup {
+    width:36px; height:40px; border-radius:0 0 8px 8px; cursor:pointer;
+    display:flex; align-items:flex-end; justify-content:center; padding-bottom:6px;
+    font-size:18px; border:2px solid var(--border); background:var(--card2);
+    transition:all 0.2s; position:relative; overflow:hidden;
+  }
+  .water-cup.filled { border-color:#3498db; background:rgba(52,152,219,0.2); }
+  .water-cup.filled::after {
+    content:''; position:absolute; bottom:0; left:0; right:0;
+    height:60%; background:rgba(52,152,219,0.3); border-radius:0 0 6px 6px;
+  }
+
+  .tag { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+  .tag-orange { background:rgba(255,77,28,0.15); color:var(--orange); }
+  .tag-green { background:rgba(46,204,113,0.15); color:var(--green); }
+  .tag-blue { background:rgba(52,152,219,0.15); color:var(--blue); }
+
+  /* Typing indicator */
+  .typing { display:flex; gap:4px; padding:14px 18px; background:var(--card2); border-radius:18px; border:1px solid var(--border); border-bottom-right-radius:4px; width:fit-content; }
+  .typing span { width:7px; height:7px; border-radius:50%; background:var(--text3); animation:bounce 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay:0.2s; }
+  .typing span:nth-child(3) { animation-delay:0.4s; }
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-8px); background:var(--orange); } }
+
+  select.form-input { appearance:none; }
+
+  .delete-food { background:none; border:none; color:var(--text3); cursor:pointer; font-size:16px; padding:4px; }
+
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  .shimmer {
+    background: linear-gradient(90deg, var(--card2) 25%, var(--border) 50%, var(--card2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP HEADER -->
+  <div class="top-header" id="top-header">
+    <h1><span>💪 PushAI</span></h1>
+    <div class="header-right">
+      <div class="today-date" id="today-date"></div>
+      <div class="header-avatar" id="header-avatar">א</div>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE SECTION ═══ -->
+  <div class="section active" id="sec-profile">
+    <div class="profile-hero">
+      <div class="profile-avatar-big" id="big-avatar">א</div>
+      <div class="profile-hero-info">
+        <h2 id="display-name">אלעד לנציאנו</h2>
+        <p id="display-subtitle">גיל 28 · 75 ק"ג · 178 ס"מ</p>
+        <div class="profile-goal-badge" id="display-goal">🎯 עלייה במסת שריר</div>
+      </div>
+    </div>
+
+    <div class="scroll-content">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="val" id="bmi-val">23.7</div>
+          <div class="lbl">BMI</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" id="cal-target-stat">2,800</div>
+          <div class="lbl">קל' יומי</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" id="prot-target-stat">150g</div>
+          <div class="lbl">חלבון יומי</div>
+        </div>
+      </div>
+
+      <!-- BMI Bar -->
+      <div class="card">
+        <div class="card-title">מדד BMI</div>
+        <div style="font-size:24px;font-weight:900;margin-bottom:8px;" id="bmi-big">23.7</div>
+        <div style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:12px;" id="bmi-status">✅ תקין</div>
+        <div class="bmi-bar-wrap">
+          <div class="bmi-bar">
+            <div class="bmi-marker" id="bmi-marker" style="left:40%"></div>
+          </div>
+          <div class="bmi-labels">
+            <span>רזה<br>&lt;18.5</span>
+            <span>תקין<br>18.5-25</span>
+            <span>עודף<br>25-30</span>
+            <span>השמנה<br>&gt;30</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Profile -->
+      <div class="card">
+        <div class="card-title">עריכת פרופיל</div>
+        <div class="form-group">
+          <label class="form-label">שם מלא</label>
+          <input class="form-input" id="inp-name" type="text" value="אלעד לנציאנו">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">גיל</label>
+            <input class="form-input" id="inp-age" type="number" value="28">
+          </div>
+          <div class="form-group">
+            <label class="form-label">מין</label>
+            <select class="form-input" id="inp-gender">
+              <option value="male">זכר</option>
+              <option value="female">נקבה</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">משקל (ק"ג)</label>
+            <input class="form-input" id="inp-weight" type="number" value="75">
+          </div>
+          <div class="form-group">
+            <label class="form-label">גובה (ס"מ)</label>
+            <input class="form-input" id="inp-height" type="number" value="178">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">רמת פעילות</label>
+          <select class="form-input" id="inp-activity">
+            <option value="1.2">יושבני (לא מתאמן)</option>
+            <option value="1.375">קל (1-3 פעמים/שבוע)</option>
+            <option value="1.55" selected>בינוני (3-5 פעמים/שבוע)</option>
+            <option value="1.725">גבוה (6-7 פעמים/שבוע)</option>
+            <option value="1.9">מאוד גבוה (פעמיים ביום)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">מטרה</label>
+          <div class="goal-selector">
+            <button class="goal-btn active" id="goal-muscle" onclick="setGoal('muscle')">💪 עלייה במסת שריר</button>
+            <button class="goal-btn" id="goal-fat" onclick="setGoal('fat')">🔥 ירידה בשומן</button>
+          </div>
+        </div>
+        <button class="save-btn" onclick="saveProfile()">💾 שמור פרופיל</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ NUTRITION SECTION ═══ -->
+  <div class="section" id="sec-nutrition">
+    <div class="scroll-content">
+      <div class="section-badge">📅 <span id="nutrition-date"></span></div>
+
+      <!-- Daily Summary -->
+      <div class="card">
+        <div class="card-title">סיכום יומי</div>
+        <div class="progress-rings">
+          <div class="ring-wrap">
+            <div class="ring-container">
+              <svg width="96" height="96" class="ring-svg">
+                <circle class="ring-bg" cx="48" cy="48" r="38"/>
+                <circle class="ring-fill" id="cal-ring" cx="48" cy="48" r="38" stroke="url(#orangeGrad)"
+                  stroke-dasharray="238.8" stroke-dashoffset="238.8"/>
+                <defs>
+                  <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#ff4d1c"/>
+                    <stop offset="100%" stop-color="#ff6b3d"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="ring-center">
+                <div class="ring-center-val" id="cal-consumed">0</div>
+                <div class="ring-center-sub">קל'</div>
+              </div>
+            </div>
+            <div class="ring-label">קלוריות</div>
+            <div class="ring-val">נותר: <span id="cal-remaining">2800</span></div>
+          </div>
+          <div class="ring-wrap">
+            <div class="ring-container">
+              <svg width="96" height="96" class="ring-svg">
+                <circle class="ring-bg" cx="48" cy="48" r="38"/>
+                <circle class="ring-fill" id="prot-ring" cx="48" cy="48" r="38" stroke="#3498db"
+                  stroke-dasharray="238.8" stroke-dashoffset="238.8"/>
+              </svg>
+              <div class="ring-center">
+                <div class="ring-center-val" id="prot-consumed">0</div>
+                <div class="ring-center-sub">g</div>
+              </div>
+            </div>
+            <div class="ring-label">חלבון</div>
+            <div class="ring-val">נותר: <span id="prot-remaining">150g</span></div>
+          </div>
+          <div class="ring-wrap">
+            <div class="ring-container">
+              <svg width="96" height="96" class="ring-svg">
+                <circle class="ring-bg" cx="48" cy="48" r="38"/>
+                <circle class="ring-fill" id="water-ring" cx="48" cy="48" r="38"
+                  stroke-dasharray="238.8" stroke-dashoffset="238.8" style="stroke:#1abc9c"/>
+              </svg>
+              <div class="ring-center">
+                <div class="ring-center-val" id="water-cups">0</div>
+                <div class="ring-center-sub">כוסות</div>
+              </div>
+            </div>
+            <div class="ring-label">מים</div>
+            <div class="ring-val">יעד: 8</div>
+          </div>
+        </div>
+        <!-- macro pills -->
+        <div class="macro-bar-row">
+          <div class="macro-pill" style="background:rgba(255,77,28,0.07);border-color:rgba(255,77,28,0.2)">
+            <div class="mp-val" style="color:var(--orange)" id="mp-cal">0</div>
+            <div class="mp-lbl">קלוריות</div>
+            <div class="mp-prog"><div class="mp-fill" id="mp-cal-fill" style="background:var(--orange);width:0%"></div></div>
+          </div>
+          <div class="macro-pill" style="background:rgba(52,152,219,0.07);border-color:rgba(52,152,219,0.2)">
+            <div class="mp-val" style="color:var(--blue)" id="mp-prot">0g</div>
+            <div class="mp-lbl">חלבון</div>
+            <div class="mp-prog"><div class="mp-fill" id="mp-prot-fill" style="background:var(--blue);width:0%"></div></div>
+          </div>
+          <div class="macro-pill" style="background:rgba(26,188,156,0.07);border-color:rgba(26,188,156,0.2)">
+            <div class="mp-val" style="color:#1abc9c" id="mp-water">0</div>
+            <div class="mp-lbl">כוסות מים</div>
+            <div class="mp-prog"><div class="mp-fill" id="mp-water-fill" style="background:#1abc9c;width:0%"></div></div>
+          </div>
+        </div>
+        <!-- water cups -->
+        <div class="water-tracker" id="water-tracker" style="margin-top:14px;"></div>
+      </div>
+
+      <!-- Meal Log with tabs -->
+      <div class="card">
+        <div class="card-title">🍽️ יומן ארוחות</div>
+        <div class="meal-tabs" id="meal-tabs"></div>
+        <div id="meal-log-content"></div>
+        <button class="add-food-btn" id="open-db-btn" onclick="openFoodDB()">
+          <span style="font-size:18px">🔍</span> חפש והוסף מזון מהמאגר
+        </button>
+      </div>
+
+      <!-- Food Database by meal -->
+      <div class="card" id="food-db-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div class="card-title" style="margin:0" id="fdb-title">🥗 ארוחת בוקר - מאגר מזון</div>
+          <button onclick="closeFoodDB()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;">✕</button>
+        </div>
+        <input class="food-db-search" id="fdb-search" placeholder="🔍 חפש מזון..." oninput="filterFoodDB()">
+        <div class="food-db-grid" id="food-db-grid"></div>
+        <button class="add-food-btn" style="margin-top:10px" onclick="openFoodModal(currentMeal)">
+          <span>➕</span> הוסף מזון מותאם אישית
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ WORKOUT SECTION ═══ -->
+  <div class="section" id="sec-workout">
+    <div class="scroll-content">
+      <div class="section-badge">🏋️ אימון היום</div>
+
+      <!-- Muscle Group Selector -->
+      <div class="card">
+        <div class="card-title">בחר קבוצת שריר</div>
+        <div class="muscle-grid" id="muscle-grid"></div>
+      </div>
+
+      <!-- Exercises for selected muscle -->
+      <div class="card" id="exercises-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div class="card-title" style="margin:0" id="exercises-title">תרגילים - חזה</div>
+          <span class="tag tag-orange" id="muscle-tag">חזה</span>
+        </div>
+        <div id="exercises-list"></div>
+        <button class="add-exercise-btn" onclick="openAddExercise()">+ הוסף תרגיל</button>
+      </div>
+
+      <!-- Workout History -->
+      <div class="card">
+        <div class="card-title">היסטוריית אימונים</div>
+        <div id="workout-history"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ AI ADVISOR SECTION ═══ -->
+  <div class="section" id="sec-ai">
+    <div class="ai-header">
+      <div class="ai-avatar">🤖</div>
+      <div class="ai-header-info">
+        <h3>מאמן AI אישי</h3>
+        <p>מחובר ופעיל</p>
+      </div>
+    </div>
+    <div class="messages-wrap" id="messages"></div>
+    <div class="quick-questions">
+      <button class="quick-q" onclick="askQuick('כמה קלוריות אני צריך לאכול היום?')">קלוריות יומיות</button>
+      <button class="quick-q" onclick="askQuick('מה הכי טוב לאכול אחרי אימון?')">תזונה אחרי אימון</button>
+      <button class="quick-q" onclick="askQuick('תן לי תוכנית אימון לחזה')">תוכנית חזה</button>
+      <button class="quick-q" onclick="askQuick('איך אני בונה שריר מהר?')">טיפים לבניית שריר</button>
+    </div>
+    <div class="chat-input-bar">
+      <input class="chat-input" id="chat-input" placeholder="שאל את המאמן שלך..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="send-btn" onclick="sendMsg()">➤</button>
+    </div>
+  </div>
+
+  <!-- ═══ BOTTOM NAV ═══ -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('profile',this)">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">פרופיל</div>
+    </div>
+    <div class="nav-item" onclick="switchTab('nutrition',this)">
+      <div class="nav-icon">🥗</div>
+      <div class="nav-label">תזונה</div>
+    </div>
+    <div class="nav-item" onclick="switchTab('workout',this)">
+      <div class="nav-icon">🏋️</div>
+      <div class="nav-label">אימון</div>
+    </div>
+    <div class="nav-item" onclick="switchTab('ai',this)">
+      <div class="nav-icon">🤖</div>
+      <div class="nav-label">יועץ AI</div>
+    </div>
+  </nav>
+</div>
+
+<!-- ═══ FOOD MODAL ═══ -->
+<div class="modal-overlay" id="food-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ הוסף מזון</div>
+    <input type="hidden" id="food-meal-target">
+    <input type="hidden" id="food-emoji">
+    <div class="form-group">
+      <label class="form-label">שם המזון</label>
+      <input class="form-input" id="food-name" placeholder="לדוגמה: חזה עוף">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">קלוריות ל-100g</label>
+        <input class="form-input" id="food-cal" type="number" placeholder="165">
+      </div>
+      <div class="form-group">
+        <label class="form-label">חלבון ל-100g</label>
+        <input class="form-input" id="food-prot" type="number" placeholder="31">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">כמות (גרם)</label>
+      <input class="form-input" id="food-amount" type="number" placeholder="150">
+    </div>
+    <button class="save-btn" onclick="addFood()">✅ הוסף לארוחה</button>
+    <button onclick="closeModal('food-modal')" style="width:100%;padding:12px;background:none;border:none;color:var(--text2);font-family:Heebo;font-size:14px;cursor:pointer;margin-top:8px;">ביטול</button>
+  </div>
+</div>
+
+<!-- ═══ EXERCISE MODAL ═══ -->
+<div class="modal-overlay" id="exercise-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💪 הוסף תרגיל</div>
+    <div class="form-group">
+      <label class="form-label">שם התרגיל</label>
+      <input class="form-input" id="ex-name" placeholder="לדוגמה: לחיצת חזה">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">סטים</label>
+        <input class="form-input" id="ex-sets" type="number" value="4">
+      </div>
+      <div class="form-group">
+        <label class="form-label">חזרות</label>
+        <input class="form-input" id="ex-reps" type="number" value="12">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">משקל (ק"ג)</label>
+      <input class="form-input" id="ex-weight" type="number" placeholder="60">
+    </div>
+    <button class="save-btn" onclick="addExercise()">✅ הוסף תרגיל</button>
+    <button onclick="closeModal('exercise-modal')" style="width:100%;padding:12px;background:none;border:none;color:var(--text2);font-family:Heebo;font-size:14px;cursor:pointer;margin-top:8px;">ביטול</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+let profile = JSON.parse(localStorage.getItem('profile') || '{}');
+let foodLog = JSON.parse(localStorage.getItem('foodLog') || '{}');
+let workoutLog = JSON.parse(localStorage.getItem('workoutLog') || '{}');
+let waterCups = parseInt(localStorage.getItem('waterCups') || '0');
+let goal = localStorage.getItem('goal') || 'muscle';
+
+const defaults = { name:'אלעד לנציאנו', age:28, weight:75, height:178, gender:'male', activity:1.55 };
+profile = Object.assign({}, defaults, profile);
+
+const TODAY = new Date().toLocaleDateString('he-IL', {weekday:'long',day:'numeric',month:'long'});
+const TODAY_KEY = new Date().toISOString().split('T')[0];
+
+if (!foodLog[TODAY_KEY]) foodLog[TODAY_KEY] = { breakfast:[], lunch:[], dinner:[], snacks:[] };
+if (!workoutLog[TODAY_KEY]) workoutLog[TODAY_KEY] = {};
+
+const MEALS = [
+  { key:'breakfast', label:'בוקר', icon:'🌅', full:'ארוחת בוקר', time:'07:00-09:00' },
+  { key:'lunch',     label:'צהריים', icon:'☀️', full:'ארוחת צהריים', time:'12:00-14:00' },
+  { key:'dinner',    label:'ערב', icon:'🌙', full:'ארוחת ערב', time:'18:00-20:00' },
+  { key:'snacks',    label:'חטיפים', icon:'🍎', full:'חטיפים', time:'בין ארוחות' },
+];
+
+// ── FOOD DATABASE ──
+// cal = קלוריות ל-100g, prot = חלבון ל-100g
+const FOOD_DB = {
+  breakfast: [
+    { name:'ביצה שלמה', emoji:'🥚', cal:155, prot:13, unit:'יחידה (50g)' },
+    { name:'חביתה 2 ביצים', emoji:'🍳', cal:185, prot:14, unit:'מנה (100g)' },
+    { name:'שיבולת שועל', emoji:'🌾', cal:389, prot:17, unit:'כוס יבש (80g)' },
+    { name:'יוגורט יווני 0%', emoji:'🥛', cal:59, prot:10, unit:'גביע (150g)' },
+    { name:'קוטג\' 5%', emoji:'🧀', cal:98, prot:12, unit:'גביע (250g)' },
+    { name:'לחם מחיטה מלאה', emoji:'🍞', cal:247, prot:9, unit:'פרוסה (30g)' },
+    { name:'בננה', emoji:'🍌', cal:89, prot:1, unit:'פרי בינוני (120g)' },
+    { name:'תפוח', emoji:'🍎', cal:52, prot:0.3, unit:'פרי בינוני (150g)' },
+    { name:'שייק חלבון', emoji:'🥤', cal:120, prot:25, unit:'מנה (30g אבקה)' },
+    { name:'גרנולה', emoji:'🌰', cal:471, prot:10, unit:'מנה (50g)' },
+    { name:'חלב 3%', emoji:'🍼', cal:61, prot:3.2, unit:'כוס (240ml)' },
+    { name:'גבינה לבנה 5%', emoji:'🫙', cal:105, prot:9, unit:'מנה (100g)' },
+    { name:'אבוקדו', emoji:'🥑', cal:160, prot:2, unit:'חצי (80g)' },
+    { name:'טחינה גולמית', emoji:'🤎', cal:595, prot:21, unit:'כף (15g)' },
+    { name:'לחם שיפון', emoji:'🫓', cal:259, prot:9, unit:'פרוסה (35g)' },
+    { name:'ביצה קשה', emoji:'🥚', cal:155, prot:13, unit:'יחידה (50g)' },
+  ],
+  lunch: [
+    { name:'חזה עוף', emoji:'🍗', cal:165, prot:31, unit:'100g' },
+    { name:'שוק עוף', emoji:'🍖', cal:209, prot:26, unit:'100g' },
+    { name:'פילה סלמון', emoji:'🐟', cal:208, prot:25, unit:'100g' },
+    { name:'טונה במים', emoji:'🐠', cal:116, prot:26, unit:'פחית (130g)' },
+    { name:'בשר בקר רזה', emoji:'🥩', cal:215, prot:26, unit:'100g' },
+    { name:'אורז לבן מבושל', emoji:'🍚', cal:130, prot:2.7, unit:'כוס (180g)' },
+    { name:'אורז מלא מבושל', emoji:'🌾', cal:111, prot:2.6, unit:'כוס (180g)' },
+    { name:'פסטה מחיטה מלאה', emoji:'🍝', cal:174, prot:7.5, unit:'כוס מבושל (140g)' },
+    { name:'בטטה', emoji:'🍠', cal:86, prot:1.6, unit:'בינונית (130g)' },
+    { name:'קינואה מבושלת', emoji:'🌿', cal:120, prot:4.4, unit:'כוס (185g)' },
+    { name:'עדשים מבושלות', emoji:'🫘', cal:116, prot:9, unit:'כוס (198g)' },
+    { name:'חומוס ביתי', emoji:'🟡', cal:166, prot:9, unit:'100g' },
+    { name:'ברוקולי', emoji:'🥦', cal:34, prot:2.8, unit:'כוס (91g)' },
+    { name:'תירס', emoji:'🌽', cal:96, prot:3.4, unit:'קלח בינוני (100g)' },
+    { name:'גזר', emoji:'🥕', cal:41, prot:0.9, unit:'בינוני (60g)' },
+    { name:'שעועית שחורה', emoji:'🫘', cal:132, prot:8.9, unit:'כוס (172g)' },
+    { name:'טופו', emoji:'🪨', cal:76, prot:8, unit:'100g' },
+    { name:'סלט ירקות', emoji:'🥗', cal:25, prot:1.5, unit:'קערה (200g)' },
+  ],
+  dinner: [
+    { name:'חזה עוף צלוי', emoji:'🍗', cal:165, prot:31, unit:'100g' },
+    { name:'דג בס', emoji:'🐡', cal:97, prot:18, unit:'100g' },
+    { name:'הלק', emoji:'🐟', cal:78, prot:17, unit:'100g' },
+    { name:'קציצות עוף', emoji:'🍖', cal:175, prot:18, unit:'100g' },
+    { name:'סלמון אפוי', emoji:'🐠', cal:208, prot:25, unit:'100g' },
+    { name:'ביצים מבושלות', emoji:'🥚', cal:155, prot:13, unit:'2 ביצים (100g)' },
+    { name:'גבינה קוטג\'', emoji:'🧀', cal:98, prot:12, unit:'גביע (250g)' },
+    { name:'יוגורט יווני', emoji:'🥛', cal:59, prot:10, unit:'גביע (150g)' },
+    { name:'חסה + עגבניה', emoji:'🥬', cal:20, prot:1, unit:'קערה (150g)' },
+    { name:'אורז מלא', emoji:'🌾', cal:111, prot:2.6, unit:'כוס (180g)' },
+    { name:'בטטה אפויה', emoji:'🍠', cal:86, prot:1.6, unit:'בינונית (130g)' },
+    { name:'ברוקולי קלוי', emoji:'🥦', cal:45, prot:3, unit:'כוס (91g)' },
+    { name:'שעועית ירוקה', emoji:'🫛', cal:31, prot:1.8, unit:'כוס (125g)' },
+    { name:'פנה מחיטה מלאה', emoji:'🍝', cal:174, prot:7.5, unit:'כוס (140g)' },
+    { name:'כבד עוף', emoji:'🍖', cal:172, prot:24, unit:'100g' },
+    { name:'שריר בקר', emoji:'🥩', cal:190, prot:29, unit:'100g' },
+  ],
+  snacks: [
+    { name:'שקדים', emoji:'🌰', cal:579, prot:21, unit:'חופן (30g)' },
+    { name:'אגוזי מלך', emoji:'🫘', cal:654, prot:15, unit:'חופן (30g)' },
+    { name:'בוטנים', emoji:'🥜', cal:567, prot:26, unit:'חופן (30g)' },
+    { name:'שייק חלבון', emoji:'🥤', cal:120, prot:25, unit:'מנה (30g)' },
+    { name:'חטיף חלבון', emoji:'🍫', cal:200, prot:20, unit:'יחידה (50g)' },
+    { name:'גבינת צ\'דר', emoji:'🧀', cal:403, prot:25, unit:'30g' },
+    { name:'קוטג\' + פרי', emoji:'🍓', cal:110, prot:10, unit:'מנה (200g)' },
+    { name:'יוגורט + דבש', emoji:'🍯', cal:100, prot:9, unit:'גביע (150g)' },
+    { name:'חומוס + גזר', emoji:'🥕', cal:140, prot:6, unit:'מנה (100g)' },
+    { name:'אורז בר מפוצח', emoji:'🌾', cal:370, prot:10, unit:'30g' },
+    { name:'פרי עונתי', emoji:'🍊', cal:50, prot:0.8, unit:'פרי בינוני (120g)' },
+    { name:'ביצה קשה', emoji:'🥚', cal:155, prot:13, unit:'יחידה (50g)' },
+    { name:'טונה קטנה', emoji:'🐟', cal:116, prot:26, unit:'פחית (85g)' },
+    { name:'מקל גבינה', emoji:'🧀', cal:280, prot:18, unit:'יחידה (28g)' },
+    { name:'תמרים', emoji:'🌴', cal:277, prot:1.8, unit:'3 יחידות (30g)' },
+    { name:'אדממה', emoji:'🫘', cal:121, prot:11, unit:'כוס (155g)' },
+  ],
+};
+
+const MUSCLES = [
+  { key:'chest', name:'חזה', icon:'💪' },
+  { key:'back', name:'גב', icon:'🏋️' },
+  { key:'shoulders', name:'כתפיים', icon:'🎯' },
+  { key:'biceps', name:'ביספס', icon:'💪' },
+  { key:'triceps', name:'טריספס', icon:'🦾' },
+  { key:'legs', name:'רגליים', icon:'🦵' },
+  { key:'abs', name:'בטן', icon:'⚡' },
+  { key:'cardio', name:'קרדיו', icon:'🏃' },
+];
+
+const DEFAULT_EXERCISES = {
+  chest: ['לחיצת חזה', 'לחיצת דמבל', 'פלאי', 'פושאפ'],
+  back: ['משיכת מוט', 'חתירה', 'לט פולדאון', 'הייפר אקסטנשן'],
+  shoulders: ['לחיצת עמד', 'דמבל קדמי', 'דמבל צדי', 'שרם'],
+  biceps: ['כפיפת מוט', 'כפיפת דמבל', 'פריחר קרל'],
+  triceps: ['פרסאדאון', 'ליצ\'ם', 'קיקבאק'],
+  legs: ['סקוואט', 'לג פרס', 'לאנג', 'כפיפות ברכיים'],
+  abs: ['כפיפות בטן', 'פלנק', 'רגליים עולות', 'רוסי טוויסט'],
+  cardio: ['ריצה', 'אופניים', 'חבל קפיצה', 'מדרגות'],
+};
+
+let selectedMuscle = 'chest';
+
+// ── INIT ──
+function init() {
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('he-IL',{day:'numeric',month:'short'});
+  document.getElementById('nutrition-date').textContent = TODAY;
+  document.getElementById('food-db-card').style.display = 'none';
+  loadProfile();
+  renderMealTabs();
+  renderMealLog();
+  renderMuscleGrid();
+  renderExercises();
+  renderWorkoutHistory();
+  renderWater();
+  updateRings();
+  initChat();
+  setGoalUI(goal);
+}
+
+// ── PROFILE ──
+function loadProfile() {
+  document.getElementById('inp-name').value = profile.name;
+  document.getElementById('inp-age').value = profile.age;
+  document.getElementById('inp-weight').value = profile.weight;
+  document.getElementById('inp-height').value = profile.height;
+  document.getElementById('inp-gender').value = profile.gender;
+  document.getElementById('inp-activity').value = profile.activity;
+  updateProfileDisplay();
+}
+
+function updateProfileDisplay() {
+  const bmi = (profile.weight / ((profile.height/100)**2)).toFixed(1);
+  document.getElementById('bmi-val').textContent = bmi;
+  document.getElementById('bmi-big').textContent = bmi;
+  document.getElementById('cal-target-stat').textContent = getCalTarget().toLocaleString();
+  document.getElementById('prot-target-stat').textContent = getProtTarget()+'g';
+  document.getElementById('display-name').textContent = profile.name;
+  document.getElementById('header-avatar').textContent = profile.name[0];
+  document.getElementById('big-avatar').textContent = profile.name[0];
+  document.getElementById('display-subtitle').textContent = `גיל ${profile.age} · ${profile.weight} ק"ג · ${profile.height} ס"מ`;
+  document.getElementById('display-goal').textContent = goal==='muscle'?'🎯 עלייה במסת שריר':'🔥 ירידה בשומן';
+
+  const bmiNum = parseFloat(bmi);
+  let bmiStatus = '', bmiColor = '';
+  if (bmiNum < 18.5) { bmiStatus='⚠️ תת משקל'; bmiColor='var(--blue)'; }
+  else if (bmiNum < 25) { bmiStatus='✅ תקין'; bmiColor='var(--green)'; }
+  else if (bmiNum < 30) { bmiStatus='⚠️ עודף משקל'; bmiColor='var(--yellow)'; }
+  else { bmiStatus='❌ השמנה'; bmiColor='var(--orange)'; }
+  const bmiEl = document.getElementById('bmi-status');
+  bmiEl.textContent = bmiStatus; bmiEl.style.color = bmiColor;
+
+  // BMI marker position (18.5=0%, 30=100%, clamp)
+  const pct = Math.min(100, Math.max(0, ((bmiNum - 18.5) / (30 - 18.5)) * 100));
+  document.getElementById('bmi-marker').style.left = pct+'%';
+}
+
+function getCalTarget() {
+  const bmr = profile.gender==='male'
+    ? 10*profile.weight + 6.25*profile.height - 5*profile.age + 5
+    : 10*profile.weight + 6.25*profile.height - 5*profile.age - 161;
+  const tdee = Math.round(bmr * profile.activity);
+  return goal==='muscle' ? tdee+300 : tdee-500;
+}
+
+function getProtTarget() {
+  return Math.round(profile.weight * (goal==='muscle'?2:1.8));
+}
+
+function setGoal(g) {
+  goal = g;
+  localStorage.setItem('goal', g);
+  setGoalUI(g);
+  updateProfileDisplay();
+  updateRings();
+}
+
+function setGoalUI(g) {
+  document.getElementById('goal-muscle').classList.toggle('active', g==='muscle');
+  document.getElementById('goal-fat').classList.toggle('active', g==='fat');
+}
+
+function saveProfile() {
+  profile.name = document.getElementById('inp-name').value;
+  profile.age = +document.getElementById('inp-age').value;
+  profile.weight = +document.getElementById('inp-weight').value;
+  profile.height = +document.getElementById('inp-height').value;
+  profile.gender = document.getElementById('inp-gender').value;
+  profile.activity = +document.getElementById('inp-activity').value;
+  localStorage.setItem('profile', JSON.stringify(profile));
+  updateProfileDisplay();
+  updateRings();
+  showToast('פרופיל נשמר בהצלחה! ✅');
+}
+
+// ── NUTRITION ──
+let currentMeal = 'breakfast';
+let foodDBOpen = false;
+
+function renderMealTabs() {
+  const tabs = document.getElementById('meal-tabs');
+  tabs.innerHTML = MEALS.map(m => {
+    const items = foodLog[TODAY_KEY][m.key] || [];
+    const totalCal = items.reduce((a,i)=>a+i.cal,0);
+    return `<button class="meal-tab ${m.key===currentMeal?'active':''}" onclick="switchMeal('${m.key}')">
+      ${m.icon} ${m.label}
+      ${totalCal>0?`<span class="meal-tab-cal">${totalCal}</span>`:''}
+    </button>`;
+  }).join('');
+}
+
+function switchMeal(key) {
+  currentMeal = key;
+  renderMealTabs();
+  renderMealLog();
+  if (foodDBOpen) renderFoodDB();
+}
+
+function renderMealLog() {
+  const meal = MEALS.find(m=>m.key===currentMeal);
+  const items = foodLog[TODAY_KEY][currentMeal] || [];
+  const totalCal = items.reduce((a,i)=>a+i.cal,0);
+  const totalProt = items.reduce((a,i)=>a+i.prot,0);
+  const el = document.getElementById('meal-log-content');
+
+  let html = `<div class="meal-log-header">
+    <div class="meal-log-title">${meal.icon} ${meal.full}</div>
+    <div class="meal-log-summary" style="color:var(--text2)">${totalCal} קל' · ${totalProt}g חלבון</div>
+  </div>`;
+
+  if (!items.length) {
+    html += `<div class="empty-meal">עדיין לא נוסף מזון<br><span style="font-size:11px">לחץ על "חפש והוסף מזון" למטה</span></div>`;
+  } else {
+    html += items.map((item,i)=> {
+      const protPct = item.cal>0 ? Math.round((item.prot*4/item.cal)*100) : 0;
+      return `<div class="food-item">
+        <div class="food-item-left">
+          <div class="food-item-emoji">${item.emoji||'🍽️'}</div>
+          <div>
+            <div class="food-item-name">${item.name}</div>
+            <div class="food-item-sub">${item.amount}g · חלבון ${protPct}%</div>
+          </div>
+        </div>
+        <div class="food-item-right">
+          <div>
+            <div class="food-item-cals">${item.cal}</div>
+            <div class="food-item-prot">${item.prot}g 🥩</div>
+          </div>
+          <button class="delete-food" onclick="removeFood('${currentMeal}',${i})">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  el.innerHTML = html;
+}
+
+function openFoodDB() {
+  foodDBOpen = true;
+  document.getElementById('food-db-card').style.display = 'block';
+  renderFoodDB();
+  document.getElementById('food-db-card').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function closeFoodDB() {
+  foodDBOpen = false;
+  document.getElementById('food-db-card').style.display = 'none';
+}
+
+function renderFoodDB() {
+  const meal = MEALS.find(m=>m.key===currentMeal);
+  document.getElementById('fdb-title').textContent = `${meal.icon} ${meal.full} — מאגר מזון`;
+  document.getElementById('fdb-search').value = '';
+  renderFoodDBGrid(FOOD_DB[currentMeal]);
+}
+
+function filterFoodDB() {
+  const q = document.getElementById('fdb-search').value.trim().toLowerCase();
+  if (!q) { renderFoodDBGrid(FOOD_DB[currentMeal]); return; }
+  // search all categories
+  const all = Object.values(FOOD_DB).flat();
+  const results = all.filter(f=> f.name.includes(q) || (f.unit||'').includes(q));
+  renderFoodDBGrid(results);
+}
+
+function renderFoodDBGrid(foods) {
+  const grid = document.getElementById('food-db-grid');
+  if (!foods.length) { grid.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:20px;grid-column:1/-1">לא נמצאו תוצאות</div>'; return; }
+  grid.innerHTML = foods.map((f,i)=> {
+    const protPct = f.cal>0 ? Math.round((f.prot*4/f.cal)*100) : 0;
+    const barW = Math.min(100, protPct);
+    return `<div class="food-db-card" id="fdc-${i}">
+      <button class="fdc-add-btn" onclick="quickAddFromDB(${i},'${escStr(f.name)}',${f.cal},${f.prot},'${escStr(f.emoji||'🍽️')}')">+</button>
+      <span class="fdc-emoji">${f.emoji||'🍽️'}</span>
+      <div class="fdc-name">${f.name}</div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:8px">${f.unit||'100g'}</div>
+      <div class="fdc-macros">
+        <div class="fdc-cal-row">
+          <span class="fdc-cal">${f.cal}</span>
+          <span class="fdc-cal-lbl">קל' / 100g</span>
+        </div>
+        <div class="fdc-prot-bar"><div class="fdc-prot-fill" style="width:${barW}%"></div></div>
+        <div class="fdc-prot-label">
+          <span class="fdc-prot-g">${f.prot}g חלבון</span>
+          <span class="fdc-prot-pct">${protPct}% מקלוריות</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  // store foods array for quick access
+  grid._foods = foods;
+}
+
+function escStr(s){ return s.replace(/'/g,"\\'"); }
+
+function quickAddFromDB(idx, name, cal100, prot100, emoji) {
+  // Pre-fill modal with this food
+  document.getElementById('food-name').value = name;
+  document.getElementById('food-cal').value = cal100;
+  document.getElementById('food-prot').value = prot100;
+  document.getElementById('food-emoji').value = emoji;
+  document.getElementById('food-amount').value = '100';
+  document.getElementById('food-meal-target').value = currentMeal;
+  document.getElementById('food-modal').classList.add('open');
+}
+
+function openFoodModal(mealKey) {
+  currentMeal = mealKey || currentMeal;
+  document.getElementById('food-meal-target').value = currentMeal;
+  document.getElementById('food-name').value = '';
+  document.getElementById('food-cal').value = '';
+  document.getElementById('food-prot').value = '';
+  document.getElementById('food-emoji').value = '🍽️';
+  document.getElementById('food-amount').value = '';
+  document.getElementById('food-modal').classList.add('open');
+}
+
+function addFood() {
+  const name = document.getElementById('food-name').value.trim();
+  const cal100 = +document.getElementById('food-cal').value;
+  const prot100 = +document.getElementById('food-prot').value;
+  const amount = +document.getElementById('food-amount').value;
+  const emoji = document.getElementById('food-emoji').value || '🍽️';
+  const meal = document.getElementById('food-meal-target').value;
+  if (!name || !amount) return showToast('מלא שם וכמות');
+  const cal = Math.round(cal100*amount/100);
+  const prot = Math.round(prot100*amount/100);
+  foodLog[TODAY_KEY][meal].push({name,cal,prot,amount,emoji});
+  localStorage.setItem('foodLog', JSON.stringify(foodLog));
+  closeModal('food-modal');
+  renderMealTabs();
+  renderMealLog();
+  updateRings();
+  showToast(`${name} נוסף! 🥗`);
+}
+
+function removeFood(meal, idx) {
+  foodLog[TODAY_KEY][meal].splice(idx,1);
+  localStorage.setItem('foodLog', JSON.stringify(foodLog));
+  renderMealTabs();
+  renderMealLog();
+  updateRings();
+}
+
+function updateRings() {
+  const allFoods = Object.values(foodLog[TODAY_KEY]).flat();
+  const totalCal = allFoods.reduce((a,i)=>a+i.cal,0);
+  const totalProt = allFoods.reduce((a,i)=>a+i.prot,0);
+  const calTarget = getCalTarget();
+  const protTarget = getProtTarget();
+
+  document.getElementById('cal-consumed').textContent = totalCal;
+  document.getElementById('prot-consumed').textContent = totalProt;
+  document.getElementById('cal-remaining').textContent = Math.max(0,calTarget-totalCal);
+  document.getElementById('prot-remaining').textContent = Math.max(0,protTarget-totalProt)+'g';
+  document.getElementById('cal-target-stat').textContent = calTarget.toLocaleString();
+  document.getElementById('prot-target-stat').textContent = protTarget+'g';
+
+  // macro pills
+  document.getElementById('mp-cal').textContent = totalCal;
+  document.getElementById('mp-prot').textContent = totalProt+'g';
+  document.getElementById('mp-water').textContent = waterCups;
+  document.getElementById('mp-cal-fill').style.width = Math.min(100,totalCal/calTarget*100)+'%';
+  document.getElementById('mp-prot-fill').style.width = Math.min(100,totalProt/protTarget*100)+'%';
+  document.getElementById('mp-water-fill').style.width = Math.min(100,waterCups/8*100)+'%';
+
+  setRing('cal-ring', totalCal/calTarget);
+  setRing('prot-ring', totalProt/protTarget);
+  setRing('water-ring', waterCups/8);
+}
+
+function setRing(id, pct) {
+  const circ = 238.8;
+  const offset = circ - Math.min(1, pct)*circ;
+  document.getElementById(id).style.strokeDashoffset = offset;
+}
+
+// ── WATER ──
+function renderWater() {
+  const el = document.getElementById('water-tracker');
+  el.innerHTML = Array.from({length:8},(_,i)=>`
+    <div class="water-cup ${i<waterCups?'filled':''}" onclick="toggleWater(${i})">
+      ${i<waterCups?'💧':''}
+    </div>
+  `).join('');
+  document.getElementById('water-cups').textContent = waterCups;
+}
+
+function toggleWater(i) {
+  waterCups = (i<waterCups)? i : i+1;
+  localStorage.setItem('waterCups', waterCups);
+  renderWater();
+  setRing('water-ring', waterCups/8);
+}
+
+// ── WORKOUT ──
+function renderMuscleGrid() {
+  const grid = document.getElementById('muscle-grid');
+  grid.innerHTML = MUSCLES.map(m=>`
+    <div class="muscle-btn ${m.key===selectedMuscle?'active':''}" onclick="selectMuscle('${m.key}')">
+      <div class="muscle-icon">${m.icon}</div>
+      <div class="muscle-name">${m.name}</div>
+    </div>
+  `).join('');
+}
+
+function selectMuscle(key) {
+  selectedMuscle = key;
+  renderMuscleGrid();
+  renderExercises();
+}
+
+function renderExercises() {
+  const m = MUSCLES.find(x=>x.key===selectedMuscle);
+  document.getElementById('exercises-title').textContent = `תרגילים - ${m.name}`;
+  document.getElementById('muscle-tag').textContent = m.name;
+
+  const exercises = (workoutLog[TODAY_KEY][selectedMuscle] || []);
+  const list = document.getElementById('exercises-list');
+  if (exercises.length===0) {
+    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text3)">אין תרגילים עדיין לשריר זה</div>`;
+    return;
+  }
+  list.innerHTML = exercises.map((ex,i)=>`
+    <div class="exercise-item">
+      <div>
+        <div class="exercise-name">${ex.name}</div>
+        <div class="exercise-sets">${ex.sets} סטים × ${ex.reps} חזרות · ${ex.weight}ק"ג</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="exercise-badge">${ex.sets}×${ex.reps}</span>
+        <button onclick="removeExercise(${i})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openAddExercise() {
+  document.getElementById('ex-name').value = '';
+  document.getElementById('ex-weight').value = '';
+  document.getElementById('exercise-modal').classList.add('open');
+}
+
+function addExercise() {
+  const name = document.getElementById('ex-name').value;
+  const sets = +document.getElementById('ex-sets').value;
+  const reps = +document.getElementById('ex-reps').value;
+  const weight = +document.getElementById('ex-weight').value;
+  if (!name) return showToast('הכנס שם תרגיל');
+  if (!workoutLog[TODAY_KEY][selectedMuscle]) workoutLog[TODAY_KEY][selectedMuscle] = [];
+  workoutLog[TODAY_KEY][selectedMuscle].push({name,sets,reps,weight});
+  localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+  closeModal('exercise-modal');
+  renderExercises();
+  renderWorkoutHistory();
+  showToast('תרגיל נוסף! 💪');
+}
+
+function removeExercise(idx) {
+  workoutLog[TODAY_KEY][selectedMuscle].splice(idx,1);
+  localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+  renderExercises();
+}
+
+function renderWorkoutHistory() {
+  const hist = document.getElementById('workout-history');
+  const entries = Object.entries(workoutLog).reverse().slice(0,7);
+  if (!entries.length) { hist.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:10px">אין היסטוריה עדיין</div>'; return; }
+  hist.innerHTML = entries.map(([date, muscles])=>{
+    const muscleNames = Object.keys(muscles).filter(k=>muscles[k].length).map(k=>MUSCLES.find(m=>m.key===k)?.name||k).join(', ');
+    const totalEx = Object.values(muscles).flat().length;
+    const d = new Date(date);
+    const label = date===TODAY_KEY ? 'היום' : d.toLocaleDateString('he-IL',{weekday:'short',day:'numeric',month:'short'});
+    return `
+      <div class="workout-history-item">
+        <div>
+          <div class="workout-summary">${muscleNames||'אימון כללי'}</div>
+          <div class="workout-date">${label} · ${totalEx} תרגילים</div>
+        </div>
+        <span class="workout-badge">${totalEx} 💪</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── AI CHAT ──
+const AI_KB = [
+  { keys:['קלוריות','כמה לאכול','כמה קל','יעד אנרגיה'],
+    ans:()=>`🔥 **יעד קלוריות יומי: ${getCalTarget().toLocaleString()} קל'**\n\nחישוב לפי הפרופיל שלך (${profile.weight}ק"ג, ${profile.height}ס"מ, ${profile.age} שנים):\n\n📊 **פיצול מאקרו מומלץ:**\n• 🥩 חלבון: **${getProtTarget()}g** (${Math.round(getProtTarget()*4)} קל')\n• 🍚 פחמימות: **${Math.round((getCalTarget()*0.45)/4)}g** (${Math.round(getCalTarget()*0.45)} קל')\n• 🥑 שומן: **${Math.round((getCalTarget()*0.25)/9)}g** (${Math.round(getCalTarget()*0.25)} קל')\n\n💡 **טיפ:** צרוך את הפחמימות סביב האימון — לפני ואחרי.` },
+
+  { keys:['חלבון','כמה חלבון','פרוטאין'],
+    ans:()=>`💪 **יעד חלבון: ${getProtTarget()}g ביום**\n\nלפרופיל שלך: **2g × ${profile.weight}ק"ג = ${getProtTarget()}g**\n\n🏆 **מקורות חלבון מומלצים:**\n• 🍗 חזה עוף 100g = 31g חלבון\n• 🐟 טונה פחית (130g) = 34g חלבון\n• 🥚 3 ביצים = 18g חלבון\n• 🥛 יוגורט יווני גביע = 15g חלבון\n• 🤎 שייק חלבון מנה = 25g חלבון\n\n📅 **פזר על 4-5 ארוחות** לספיגה מיטבית — לא הכל בבת אחת!` },
+
+  { keys:['לפני אימון','ארוחה לפני'],
+    ans:()=>`⚡ **תזונה לפני אימון — ${profile.name}**\n\n**1-2 שעות לפני:**\n• 🍚 פחמימות איטיות: אורז מלא, בטטה, שיבולת שועל\n• 🍗 חלבון בינוני: עוף, ביצים\n• ❌ להימנע מסיבים ושומן רב — מאטים עיכול\n\n**30-45 דקות לפני:**\n• 🍌 בננה + קפה שחור\n• 🥤 שייק קל עם אבקת חלבון\n\n🎯 **מטרה:** גלוקוז זמין לשרירים + חלבון למניעת פירוק שרירי.` },
+
+  { keys:['אחרי אימון','פוסט וורקאוט','תזונה אחרי'],
+    ans:()=>`🚀 **חלון ההזדמנויות — 30-60 דקות אחרי אימון**\n\nזה הזמן הכי חשוב! הגוף סופג חומרי גלם הכי טוב.\n\n✅ **חלבון 30-40g:**\n• שייק חלבון\n• חזה עוף + אורז\n• קוטג' + פרי\n\n✅ **פחמימות מהירות 40-60g:**\n• אורז לבן\n• בננה\n• לחם לבן\n\n⏰ **${profile.name}, לפי הנתונים שלך:** שאף ל-${Math.round(getProtTarget()/4)}g חלבון בארוחה זו.` },
+
+  { keys:['חזה','פקטורל','לחיצה'],
+    ans:()=>`💪 **תוכנית אימון חזה — רמה מתקדמת**\n\n**סט 1 — כוח:**\n• לחיצת חזה עם מוט — 4×6-8 (80-85% מ-1RM)\n\n**סט 2 — היפרטרופיה:**\n• לחיצת דמבל שיפועי — 3×10-12\n• פלאי כבל — 3×12-15\n\n**סט 3 — סיום:**\n• פושאפ עד כישלון — 3×Max\n\n⏱️ **מנוחה:** 90-120 שניות | 📅 **2× בשבוע** | 💡 **אקסנטרי איטי** — 3 שניות ירידה.` },
+
+  { keys:['גב','גב רחב','לט','משיכה'],
+    ans:()=>`🏋️ **תוכנית אימון גב**\n\n1. **מתח רחב** — 4×6-10 (המלך!)\n2. **חתירת מוט שכיבה** — 4×8-10\n3. **לט פולדאון** — 3×10-12\n4. **חתירת כבל** — 3×12-15\n5. **הייפר אקסטנשן** — 3×15\n\n💡 **טיפ:** חשוב על לסחוט את המרפק לגוף — לא על הידיים. מרגיש את הגב!` },
+
+  { keys:['רגליים','רגל','סקוואט','ירכיים','עגל'],
+    ans:()=>`🦵 **תוכנית אימון רגליים — Full Leg Day**\n\n**ריבועי:**\n• סקוואט — 4×8-10 (מלכת התרגילים)\n• לג פרס — 3×12-15\n\n**דו-ראשי ירך:**\n• כפיפות רגליים — 4×10-12\n• דד ליפט רומני — 3×8-10\n\n**עגל:**\n• עליות עגל עמידה — 4×15-20\n\n⚠️ **כאב ברך?** בסקוואט ודא שהברכיים לא חורגות מהאצבעות.` },
+
+  { keys:['כתפיים','דלתואיד','כתף'],
+    ans:()=>`🎯 **תוכנית כתפיים**\n\n1. **לחיצת עמד עם מוט** — 4×8-10\n2. **דמבל קדמי** — 3×12\n3. **דמבל צדי** — 3×12-15\n4. **חתירה לסנטר** — 3×10-12\n5. **ציפוי אחורי** — 3×15\n\n💡 **טיפ:** כתפיים = שריר שנפצע בקלות. חמם טוב ואל תלך כבד מדי בלחיצת עמד.` },
+
+  { keys:['בטן','אבס','core','קור'],
+    ans:()=>`⚡ **תוכנית אימון בטן — 15 דקות**\n\n1. **פלנק** — 3×60 שניות\n2. **כפיפות בטן** — 3×20\n3. **רגליים עולות** — 3×15\n4. **רוסי טוויסט** — 3×20 (כל צד)\n5. **מאוורר** — 3×10\n\n💡 **סוד:** הבטן נבנית ב-80% במטבח! ${profile.weight*2}g חלבון + גירעון קלורי = בטן שטוחה.` },
+
+  { keys:['שינה','מנוחה','ריקברי','התאוששות'],
+    ans:()=>`😴 **שינה = בניית שריר!**\n\nבזמן שאתה ישן GH (הורמון גדילה) מופרש בשיא.\n\n✅ **מה לעשות:**\n• **7-9 שעות** — לא פחות!\n• שינה לפני **23:00** = הכי איכותית\n• מחדר קריר (18-19°C)\n\n🍌 **לפני שינה:**\n• קזאין (קוטג', גבינה לבנה) = חלבון איטי לכל הלילה\n• ${Math.round(getProtTarget()*0.25)}g חלבון בארוחת לילה לפרופיל שלך` },
+
+  { keys:['ירידה בשומן','לרדת','שומן','דיאטה','גירעון'],
+    ans:()=>`🔥 **תוכנית ירידה בשומן — ${profile.name}**\n\n📉 **יעד קלורי:** ${getCalTarget().toLocaleString()} קל' (גירעון של 500)\n💪 **חלבון:** ${getProtTarget()}g — חשוב לשמור שריר!\n\n**כלל הזהב — 5 שלבים:**\n1. קלוריות פחות — לא אוכל פחות! (בחר מזון נפחי)\n2. ${getProtTarget()}g חלבון ביום — שומר על שריר\n3. אימוני כוח — אל תעבור לקרדיו בלבד!\n4. ‏10,000 צעדים ביום — מגדיל TDEE\n5. **סבלנות** — מקסימום 500g שומן בשבוע\n\n📅 **ציפייה: ${profile.weight - 4}ק"ג תוך חודשיים** עם עמידה ביעדים.` },
+
+  { keys:['עלייה במסה','מאסה','בולקינג','לעלות'],
+    ans:()=>`💪 **תוכנית עלייה במסת שריר — Clean Bulk**\n\n📈 **יעד קלורי:** ${getCalTarget().toLocaleString()} קל' (עודף של 300)\n🥩 **חלבון:** ${getProtTarget()}g — בסיס לבנייה\n\n**עקרונות:**\n1. **עומס פרוגרסיבי** — הוסף משקל כל שבוע\n2. **4-5 ארוחות ביום** — כל 3-4 שעות\n3. **כיבוד אחרי אימון** — חלבון + פחמימות מהר\n4. **מנוחה** — שריר גדל בשינה, לא באימון!\n\n📅 **ציפייה ריאלית:** 0.5-1ק"ג שריר נקי בחודש = **${profile.weight + 1}ק"ג תוך 2-3 חודשים**.` },
+
+  { keys:['מים','הידרציה','כמה מים'],
+    ans:()=>`💧 **מים — המוזנח ביותר בתזונה**\n\n🎯 **יעד יומי: ${Math.round(profile.weight * 35)}ml** (${profile.weight}ק"ג × 35ml)\n= בערך **${Math.round(profile.weight*35/250)} כוסות ביום**\n\n⏰ **מתי לשתות:**\n• בבוקר בהתעוררות — **500ml** (פצוי לחות לילית)\n• 30 דקות לפני אימון — 500ml\n• במהלך אימון — 200ml כל 20 דק'\n• אחרי אימון — 750ml לפצוי\n\n⚠️ **שתן צהוב כהה = שתה יותר!**` },
+
+  { keys:['קפה','קפאין','אנרג'],
+    ans:()=>`☕ **קפאין — תוסף הכי יעיל בשוק!**\n\n📊 **מה המחקר אומר:**\n• מגביר ביצועים ב-**10-15%**\n• מפחית תחושת עייפות\n• מגביר שריפת שומן\n\n✅ **מינון אידיאלי:** ${Math.round(profile.weight * 3-5)}mg = ${Math.round(profile.weight * 3 / 90)}-${Math.round(profile.weight * 5 / 90)} כוסות קפה\n\n⏰ **תזמון:** 45-60 דקות לפני אימון\n\n⚠️ **לא אחרי 14:00** — פוגע בשינה ובבנייה!` },
+
+  { keys:['תוספי תזונה','תוספים','סאפלמנטים','קריאטין','ויטמין'],
+    ans:()=>`💊 **תוספי תזונה — מה שווה?**\n\n✅ **חובה:**\n• **אבקת חלבון** — לנוחות להגיע ל-${getProtTarget()}g\n• **קריאטין** — 5g ביום, הכי יעיל! +5-10% כוח\n• **ויטמין D3** — רוב האנשים חסרים (1000-2000IU)\n• **אומגה 3** — אנטי דלקתי, 2-3g/יום\n\n⚠️ **לא חובה:**\n• BCAAs — מיותר אם אוכל מספיק חלבון\n• Fat burners — שוב שיווק בלבד\n• קודם תסדר תזונה ואימון, אחר כך תוספים!` },
+
+  { keys:['שבוע','תוכנית שבועית','ימי אימון','סדר אימון'],
+    ans:()=>`📅 **תוכנית אימון שבועית מומלצת**\n\n**ראשון:** 💪 חזה + טריספס\n**שני:** 🦵 רגליים\n**שלישי:** 😴 מנוחה / קרדיו קל\n**רביעי:** 🏋️ גב + ביספס\n**חמישי:** 🎯 כתפיים + בטן\n**שישי:** 🏃 קרדיו / Full body\n**שבת:** 😴 מנוחה מלאה\n\n💡 **לפרופיל שלך (${goal==='muscle'?'בנייה':'שריפה'}):** ${goal==='muscle'?'4-5 אימונים בשבוע, מנוחה 48 שעות לכל שריר':'3 כוח + 2 קרדיו, גירעון קלורי ביניהם'}` },
+];
+
+function getAIResponse(text) {
+  const lower = text.toLowerCase();
+  for (const item of AI_KB) {
+    if (item.keys.some(k => lower.includes(k))) return item.ans();
+  }
+  // Smart fallback based on context
+  const allFoods = Object.values(foodLog[TODAY_KEY]).flat();
+  const totalCal = allFoods.reduce((a,i)=>a+i.cal,0);
+  const totalProt = allFoods.reduce((a,i)=>a+i.prot,0);
+  const calLeft = Math.max(0, getCalTarget() - totalCal);
+  const protLeft = Math.max(0, getProtTarget() - totalProt);
+  return `💬 שאלה מעניינת!\n\nלפי הנתונים שלך היום:\n• נותרו לך **${calLeft} קל'** ו-**${protLeft}g חלבון** עד היעד\n• מטרה: **${goal==='muscle'?'עלייה במסת שריר':'ירידה בשומן'}**\n\nנסה לשאול על: קלוריות, חלבון, אימון חזה/גב/רגליים/כתפיים, תזונה לפני/אחרי אימון, שינה, תוספים, מים, שבוע אימון — ואני אתן לך מידע מדויק! 💪`;
+}
+
+function initChat() {
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '';
+  addBotMsg(`שלום ${profile.name}! 👋\n\nאני המאמן האישי שלך. בניתי תוכנית בשבילך:\n\n🎯 **מטרה:** ${goal==='muscle'?'עלייה במסת שריר':'ירידה בשומן'}\n🔥 **קלוריות יומיות:** ${getCalTarget().toLocaleString()}\n💪 **חלבון יומי:** ${getProtTarget()}g\n\nבמה אוכל לעזור לך היום?`);
+}
+
+function addBotMsg(text, delay=0) {
+  const msgs = document.getElementById('messages');
+  if (delay>0) {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'msg bot';
+    typingDiv.innerHTML = `<div class="msg-avatar">🤖</div><div class="typing"><span></span><span></span><span></span></div>`;
+    msgs.appendChild(typingDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(()=>{
+      typingDiv.remove();
+      _addBotBubble(text, msgs);
+    }, delay);
+  } else {
+    _addBotBubble(text, msgs);
+  }
+}
+
+function _addBotBubble(text, msgs) {
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-bubble">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\`(.*?)\`/g,'<code style="background:rgba(255,77,28,0.1);padding:2px 6px;border-radius:4px;color:var(--orange)">$1</code>')}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMsg(text) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = `<div class="msg-avatar">${profile.name[0]}</div><div class="msg-bubble">${text}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendMsg() {
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  inp.focus();
+  addUserMsg(text);
+  const response = getAIResponse(text);
+  addBotMsg(response, 900);
+}
+
+function askQuick(q) {
+  document.getElementById('chat-input').value = q;
+  sendMsg();
+}
+
+// ── NAVIGATION ──
+function switchTab(name, el) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  el.classList.add('active');
+  if (name==='ai') { setTimeout(()=>{ const m=document.getElementById('messages'); m.scrollTop=m.scrollHeight; },100); }
+}
+
+// ── MODALS ──
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.4);font-family:Heebo;animation:fadeUp 0.3s ease';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2500);
+}
+
+// ── SAMPLE DATA ──
+function addSampleData() {
+  if (!foodLog[TODAY_KEY].breakfast.length) {
+    foodLog[TODAY_KEY].breakfast = [
+      {name:'ביצים מקושקשות',cal:220,prot:18,amount:150,emoji:'🍳'},
+      {name:'לחם מחיטה מלאה',cal:74,prot:3,amount:30,emoji:'🍞'},
+      {name:'יוגורט יווני',cal:89,prot:15,amount:150,emoji:'🥛'},
+    ];
+    foodLog[TODAY_KEY].lunch = [
+      {name:'חזה עוף',cal:247,prot:46,amount:150,emoji:'🍗'},
+      {name:'אורז מלא',cal:200,prot:5,amount:180,emoji:'🌾'},
+      {name:'ברוקולי',cal:31,prot:3,amount:91,emoji:'🥦'},
+    ];
+    localStorage.setItem('foodLog', JSON.stringify(foodLog));
+  }
+  if (!Object.keys(workoutLog[TODAY_KEY]).length) {
+    workoutLog[TODAY_KEY].chest = [{name:'לחיצת חזה',sets:4,reps:10,weight:80},{name:'פלאי כבל',sets:3,reps:15,weight:20}];
+    workoutLog[TODAY_KEY].back = [{name:'משיכת מוט',sets:4,reps:8,weight:100}];
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+    const yk = yesterday.toISOString().split('T')[0];
+    if (!workoutLog[yk]) workoutLog[yk] = {};
+    workoutLog[yk].legs = [{name:'סקוואט',sets:4,reps:10,weight:100},{name:'לג פרס',sets:3,reps:12,weight:150}];
+    workoutLog[yk].abs = [{name:'פלנק',sets:3,reps:60,weight:0}];
+    localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+  }
+  if (!waterCups) { waterCups=5; localStorage.setItem('waterCups',5); }
+}
+
+addSampleData();
+init();
+</script>
+</body>
+</html>
